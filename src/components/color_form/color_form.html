@@ -1,0 +1,77 @@
+<form method="GET" class="cg-color-form">
+    <div class="cg-color-form__content">
+        <p class="cg-color-form__copy">
+            Check foreground and background color combinations against WCAG 2.2 contrast requirements.
+        </p>
+        <p class="cg-color-form__copy">
+            Enter one color per line in any CSS format. Add an optional label after a semicolon.
+        </p>
+        <div class="cg-color-form__field-wrapper cg-color-form__field-wrapper--background-colors">
+            <label for="cg-color-form__background-colors" class="cg-color-form__label">Rows</label>
+            <textarea id="cg-color-form__background-colors" name="background-colors" class="cg-color-form__textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="One color per line, e.g. #FF8000; Orange"></textarea>
+            <button type="button" class="cg-color-form__eyedropper" data-target="cg-color-form__background-colors" hidden>
+                <cg-icon name="eyedropper" class="cg-color-form__eyedropper-icon"></cg-icon>
+                Pick color from screen
+            </button>
+        </div>
+        <div class="cg-color-form__field-wrapper">
+            <label for="cg-color-form__foreground-colors" class="cg-color-form__label">Rows &amp; Columns</label>
+            <textarea id="cg-color-form__foreground-colors" name="foreground-colors" class="cg-color-form__textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="One color per line, e.g. #FF8000; Orange">
+#FFFFFF; White
+#BFBFBF; Light Gray
+#767676; Gray
+#404040; Dark Gray
+#000000; Black
+#FFBF00; Yellow Orange
+#FF8000; Orange
+#FF4000; Red Orange
+</textarea>
+            <button type="button" class="cg-color-form__eyedropper" data-target="cg-color-form__foreground-colors" hidden>
+                <cg-icon name="eyedropper" class="cg-color-form__eyedropper-icon"></cg-icon>
+                Pick color from screen
+            </button>
+            <a href="#" class="cg-color-form__show-background-colors">Use distinct rows &amp; columns values</a>
+            <a href="#" class="cg-color-form__hide-background-colors">Use the same rows &amp; columns values</a>
+        </div>
+
+        <div class="cg-color-form__field-wrapper">
+            <label class="cg-color-form__label" for="cg-color-form__tile-size-number">Tile Size</label>
+            <div class="cg-color-form__range-group">
+                <input type="range" id="cg-color-form__tile-size" name="cg-color-form__tile-size" class="cg-color-form__range" min="45" max="300" step="1" value="80" aria-label="Tile size slider">
+                <input type="number" id="cg-color-form__tile-size-number" class="cg-color-form__number" min="45" max="300" step="1" value="80">
+                <span class="cg-color-form__unit">px</span>
+            </div>
+        </div>
+
+        <div class="cg-color-form__field-wrapper">
+            <label class="cg-color-form__label">Show</label>
+
+            <div class="cg-color-form__checkbox-group cg-color-form__radio-button-group">
+                <label for="cg-color-form__show-contrast--aaa" class="cg-color-form__radio-button">
+                    <input class="cg-color-form__radio-button-input cg-color-form__level-toggle" type="checkbox" id="cg-color-form__show-contrast--aaa" data-level="aaa">
+                    <span class="cg-color-form__radio-button-text">
+                        AAA
+                    </span>
+                </label>
+                <label for="cg-color-form__show-contrast--aa" class="cg-color-form__radio-button">
+                    <input class="cg-color-form__radio-button-input cg-color-form__level-toggle" type="checkbox" id="cg-color-form__show-contrast--aa" data-level="aa">
+                    <span class="cg-color-form__radio-button-text">
+                        AA
+                    </span>
+                </label>
+                <label for="cg-color-form__show-contrast--large" class="cg-color-form__radio-button">
+                    <input class="cg-color-form__radio-button-input cg-color-form__level-toggle" type="checkbox" id="cg-color-form__show-contrast--large" data-level="large">
+                    <span class="cg-color-form__radio-button-text">
+                        Large
+                    </span>
+                </label>
+                <label for="cg-color-form__show-contrast--fail" class="cg-color-form__radio-button">
+                    <input class="cg-color-form__radio-button-input cg-color-form__level-toggle" type="checkbox" id="cg-color-form__show-contrast--fail" data-level="fail">
+                    <span class="cg-color-form__radio-button-text">
+                        Fail
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+</form>

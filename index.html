@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contrast Grid</title>
+    <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+    <div class="cg-app__flex-container">
+        <div class="cg-app__outer-wrap">
+            <div class="cg-app__configurator">
+                <div class="cg-app__sidebar">
+                    <h1 class="cg-app__title">Contrast Grid</h1>
+                    <cg-color-form></cg-color-form>
+                    <div class="cg-contrast-grid-key">
+                        <div class="cg-contrast-grid-key__label">
+                            <span class="cg-contrast-grid__accessibility-label cg-contrast-grid__accessibility-label--aaa">AAA</span> Pass, AAA (7+)
+                        </div>
+                        <div class="cg-contrast-grid-key__label">
+                            <span class="cg-contrast-grid__accessibility-label cg-contrast-grid__accessibility-label--aa">AA</span> Pass, AA (4.5+)
+                        </div>
+                        <div class="cg-contrast-grid-key__label">
+                            <span class="cg-contrast-grid__accessibility-label cg-contrast-grid__accessibility-label--large">Large</span> Pass, Large Text &amp; UI Components (3+)
+                        </div>
+                        <div class="cg-contrast-grid-key__label">
+                            <span class="cg-contrast-grid__accessibility-label cg-contrast-grid__accessibility-label--fail">Fail</span> Does Not Pass
+                        </div>
+                        <a class="cg-contrast-grid-key__link" href="https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html">About WCAG 2.2 contrast</a>
+                    </div>
+                    <p class="cg-app__legal">
+                        <a href="impressum.html">Impressum und Datenschutz</a>
+                    </p>
+                </div>
+                <div class="cg-app__results">
+                    <cg-contrast-grid></cg-contrast-grid>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

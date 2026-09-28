@@ -1,0 +1,87 @@
+<div class="cg-contrast-grid">
+    <div class="cg-contrast-grid__inner">
+        <table class="cg-contrast-grid__table">
+            <thead>
+                <tr class="cg-contrast-grid__foreground-key">
+                    <th>
+                        <div class="cg-contrast-grid__key-swatch-spacer">
+                            <span class="cg-contrast-grid__key-swatch-label cg-contrast-grid__key-swatch-label--background">Background</span>
+                            <span class="cg-contrast-grid__key-swatch-label cg-contrast-grid__key-swatch-label--text">Text</span>
+                        </div>
+                    </th>
+                    <th id="cg-contrast-grid__foreground-key-cell-template" class="cg-contrast-grid__foreground-key-cell">
+                        <div class="cg-contrast-grid__key-swatch cg-contrast-grid__key-swatch--foreground">
+                            <div class="cg-contrast-grid__key-swatch-label">
+                                <div class="cg-contrast-grid__key-swatch-label-text"></div>
+                                <div class="cg-contrast-grid__key-swatch-label-hex"></div>
+                            </div>
+                            <div class="cg-contrast-grid__key-swatch-controls">
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-copy">
+                                    <cg-icon name="copy" class="cg-contrast-grid__key-swatch-copy-icon"></cg-icon>
+                                    <cg-icon name="check" class="cg-contrast-grid__key-swatch-copied-icon"></cg-icon>
+                                </button>
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-remove">
+                                    <cg-icon name="close" class="cg-contrast-grid__key-swatch-remove-icon"></cg-icon>
+                                </button>
+                                <span class="cg-contrast-grid__key-swatch-drag-handle cg-contrast-grid__key-swatch-drag-handle--column">
+                                    <cg-icon name="grip-horizontal" class="cg-contrast-grid__key-swatch-drag-handle-icon"></cg-icon>
+                                </span>
+                            </div>
+                            <div class="cg-contrast-grid__key-swatch-controls cg-contrast-grid__key-swatch-controls--bottom">
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-move" data-direction="left">
+                                    <cg-icon name="chevron-left"></cg-icon>
+                                </button>
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-move" data-direction="right">
+                                    <cg-icon name="chevron-right"></cg-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="cg-contrast-grid__content">
+                <tr id="cg-contrast-grid__content-row-template" class="cg-contrast-grid__content-row">
+                    <th class="cg-contrast-grid__background-key-cell">
+                        <div class="cg-contrast-grid__key-swatch cg-contrast-grid__key-swatch--background">
+                            <div class="cg-contrast-grid__key-swatch-label">
+                                <div class="cg-contrast-grid__key-swatch-label-text"></div>
+                                <div class="cg-contrast-grid__key-swatch-label-hex"></div>
+                            </div>
+                            <div class="cg-contrast-grid__key-swatch-controls">
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-move" data-direction="up">
+                                    <cg-icon name="chevron-up"></cg-icon>
+                                </button>
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-move" data-direction="down">
+                                    <cg-icon name="chevron-down"></cg-icon>
+                                </button>
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-copy">
+                                    <cg-icon name="copy" class="cg-contrast-grid__key-swatch-copy-icon"></cg-icon>
+                                    <cg-icon name="check" class="cg-contrast-grid__key-swatch-copied-icon"></cg-icon>
+                                </button>
+                                <button type="button" class="cg-contrast-grid__key-swatch-action cg-contrast-grid__key-swatch-remove">
+                                    <cg-icon name="close" class="cg-contrast-grid__key-swatch-remove-icon"></cg-icon>
+                                </button>
+                                <span class="cg-contrast-grid__key-swatch-drag-handle cg-contrast-grid__key-swatch-drag-handle--row">
+                                    <cg-icon name="grip" class="cg-contrast-grid__key-swatch-drag-handle-icon"></cg-icon>
+                                </span>
+                            </div>
+                        </div>
+                    </th>
+                    <td id="cg-contrast-grid__content-cell-template" class="cg-contrast-grid__content-cell">
+                        <div class="cg-contrast-grid__swatch">
+                            <button type="button" class="cg-contrast-grid__suggest">
+                                <cg-icon name="suggest" class="cg-contrast-grid__suggest-icon"></cg-icon>
+                            </button>
+                            <span class="cg-contrast-grid__swatch-demo-text">Text</span>
+                            <div class="cg-contrast-grid__swatch-stats">
+                                <span class="cg-contrast-grid__accessibility-label"></span>
+                                <span class="cg-contrast-grid__contrast-ratio"></span>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<p class="cg-contrast-grid__status" role="status"></p>

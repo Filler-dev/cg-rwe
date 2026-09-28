@@ -1,0 +1,198 @@
+@import 'variables';
+@import '@fontsource/lato/400.css';
+@import '@fontsource/lato/400-italic.css';
+@import '@fontsource/lato/700.css';
+
+// Only the interface follows the system theme; grid tiles always show the colors as entered.
+:root {
+    color-scheme: light dark;
+
+    --cg-page: light-dark(#{$color-white}, #1E1E1E);
+    --cg-sidebar: light-dark(#{$color-gray-95}, #2A2A2A);
+    --cg-text: light-dark(#{$color-black}, #E6E6E6);
+    --cg-muted: light-dark(#{$color-gray-30}, #B0B0B0);
+    --cg-rule: light-dark(#{darken($color-gray-95, 10%)}, #444444);
+    --cg-border: #{$color-gray-50};
+    // Dark: the default link color of Chrome and Edge in a dark color scheme.
+    --cg-link: light-dark(#{$color-link}, #9E9EFF);
+    --cg-link-hover: light-dark(#{$color-link-hover}, #{lighten(#9E9EFF, 10%)});
+    --cg-toggle: light-dark(#{darken($color-gray-95, 10%)}, #3A3A3A);
+    --cg-toggle-checked: light-dark(#{$color-gray-30}, #D9D9D9);
+    --cg-toggle-checked-text: light-dark(#{$color-white}, #000000);
+    --cg-spacer-line: light-dark(#{$color-gray-95}, #3A3A3A);
+    --cg-placeholder: light-dark(#EFEFEF, #333333);
+    --cg-placeholder-shadow: light-dark(#C6C6C6, #111111);
+}
+
+@import 'color_form/color_form';
+@import 'contrast_grid/contrast_grid_interactions';
+
+$sidebar-shadow: -3px 0 3px rgba($color-black, .15);
+
+html,
+body {
+    background: var(--cg-page);
+    box-sizing: border-box;
+    color: var(--cg-text);
+    font-family: $font-family-default;
+    font-weight: $font-weight-light;
+    margin: 0;
+    min-height: 100vh;
+    padding: 0;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+a {
+    color: var(--cg-link);
+    text-decoration: none;
+
+    &:hover {
+        color: var(--cg-link-hover);
+    }
+}
+
+// The icons inherit `fill` from the host element, so the icon classes keep
+// working when applied to <cg-icon>.
+cg-icon {
+    display: inline-block;
+    line-height: 0;
+
+    svg {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+.cg-app__flex-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.cg-app__outer-wrap {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100vh;
+}
+
+.cg-app__configurator {
+    align-items: stretch;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.cg-app__sidebar {
+    background: var(--cg-sidebar);
+    // Just wide enough for "Use distinct rows & columns values" on one line.
+    flex: 0 0 312px;
+    overflow-y: auto;
+    // Keeps the content width the same whether or not the sidebar scrolls.
+    scrollbar-gutter: stable;
+}
+
+.cg-app__title {
+    align-items: center;
+    display: flex;
+    font-size: $font-size-h3;
+    font-weight: 300;
+    margin: 0;
+    padding: $spacing-md;
+    padding-bottom: 0;
+}
+
+.cg-app__results {
+    box-shadow: $sidebar-shadow;
+    flex: 1;
+    // Without this the grid's width keeps the flex item from shrinking, so the
+    // panel grows past the viewport and its right edge becomes unreachable.
+    min-width: 0;
+    overflow: hidden;
+    padding: $spacing-default 0 $spacing-default $spacing-default;
+}
+
+// Bounded to the viewport so the grid's own scrollbars stay on screen.
+cg-contrast-grid {
+    display: block;
+    height: 100%;
+    // Anchors the visually hidden status message.
+    position: relative;
+}
+
+// Grid legend, rendered in the sidebar rather than inside the table.
+.cg-contrast-grid-key {
+    border-top: solid 1px var(--cg-rule);
+    margin: 0 $spacing-md $spacing-md;
+    padding-top: $spacing-md;
+}
+
+.cg-contrast-grid-key__label {
+    align-items: center;
+    display: flex;
+    font-size: $font-size-sm;
+    margin-bottom: $spacing-xs;
+
+    .cg-contrast-grid__accessibility-label {
+        flex-shrink: 0;
+        margin-right: $spacing-xs;
+    }
+}
+
+.cg-contrast-grid-key__link {
+    display: inline-block;
+    font-size: $font-size-sm;
+    margin-top: $spacing-xs;
+}
+
+.cg-app__legal {
+    font-size: $font-size-sm;
+    margin: 0;
+    padding: 0 $spacing-md $spacing-md;
+}
+
+// Standalone document pages such as the Impressum.
+.cg-page {
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 720px;
+    padding: $spacing-default $spacing-md;
+}
+
+.cg-page__title {
+    font-size: $font-size-h3;
+    font-weight: 300;
+    margin: 0 0 $spacing-default;
+}
+
+.cg-page__section {
+    border-bottom: solid 1px var(--cg-rule);
+    font-size: $font-size-lg;
+    font-weight: 300;
+    margin: $spacing-default 0 $spacing-stack-default;
+    padding-bottom: $spacing-xs;
+}
+
+.cg-page__heading {
+    font-size: $font-size-default;
+    font-weight: bold;
+    margin: $spacing-md 0 $spacing-xs;
+}
+
+.cg-page__text {
+    font-size: $font-size-default;
+    margin: 0;
+}
+
+.cg-page__back {
+    border-top: solid 1px var(--cg-rule);
+    margin-top: $spacing-default;
+    padding-top: $spacing-stack-default;
+}
+
+// Loaded last so it keeps overriding the interaction styles above.
+@import 'contrast_grid/contrast_grid';
