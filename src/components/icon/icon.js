@@ -1,3 +1,4 @@
+import arrowDownUp from "bootstrap-icons/icons/arrow-down-up.svg?raw";
 import check from "bootstrap-icons/icons/check2.svg?raw";
 import chevronDown from "bootstrap-icons/icons/chevron-down.svg?raw";
 import chevronLeft from "bootstrap-icons/icons/chevron-left.svg?raw";
@@ -22,6 +23,7 @@ const SOURCES = {
   grip: gripVertical,
   "grip-horizontal": gripHorizontal,
   suggest: magic,
+  swap: arrowDownUp,
 };
 
 // Drops width/height/fill so the icon takes its size and color from the CSS

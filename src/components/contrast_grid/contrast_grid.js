@@ -1,4 +1,3 @@
-import Sortable from "sortablejs";
 import { qs, qsa, delegate } from "../../scripts/dom.js";
 import { EVENTS, emit, on } from "../../scripts/events.js";
 import {
@@ -12,6 +11,24 @@ import template from "./contrast_grid.html?raw";
 const COPIED_FEEDBACK_MS = 1500;
 
 const MOVE_STEPS = { left: -1, up: -1, right: 1, down: 1 };
+
+const DRAG_AXES = {
+  column: {
+    item: ".cg-contrast-grid__foreground-key-cell",
+    colorset: "foreground",
+    event: EVENTS.columnsSorted,
+    horizontal: true,
+  },
+  row: {
+    item: ".cg-contrast-grid__content-row",
+    colorset: "background",
+    event: EVENTS.rowsSorted,
+    horizontal: false,
+  },
+};
+
+const AUTOSCROLL_EDGE = 40;
+const AUTOSCROLL_STEP = 12;
 
 class ContrastGridElement extends HTMLElement {
   #grid;
@@ -135,33 +152,76 @@ class ContrastGridElement extends HTMLElement {
   }
 
   #enableDragUi() {
-    const shared = {
-      animation: 150,
-      ghostClass: "cg-drag-placeholder",
-      dragClass: "cg-drag-helper",
-      fallbackOnBody: true,
+    this.addEventListener("pointerdown", (event) => {
+      const handle = event.target.closest(".cg-contrast-grid__key-swatch-drag-handle");
+      if (!handle || event.button !== 0) {
+        return;
+      }
+
+      const axis = handle.classList.contains("cg-contrast-grid__key-swatch-drag-handle--column")
+        ? DRAG_AXES.column
+        : DRAG_AXES.row;
+
+      // Stops text selection while dragging.
+      event.preventDefault();
+      this.#drag(handle.closest(axis.item), axis);
+    });
+  }
+
+  // Reorders the DOM while dragging; on release the grid is rebuilt from the
+  // color form, which is the single source of truth.
+  #drag(item, axis) {
+    const initialOrder = this.#extractColors(axis.colorset).join();
+    item.classList.add("cg-drag-active");
+
+    const onMove = (event) => {
+      const position = axis.horizontal ? event.clientX : event.clientY;
+      const others = qsa(`:scope > ${axis.item}`, item.parentElement).filter(
+        (other) => other !== item,
+      );
+      const next = others.find((other) => {
+        const box = other.getBoundingClientRect();
+        return position < (axis.horizontal ? box.left + box.width / 2 : box.top + box.height / 2);
+      });
+
+      if (next && item.nextElementSibling !== next) {
+        next.before(item);
+      } else if (!next && others.length && item.previousElementSibling !== others.at(-1)) {
+        others.at(-1).after(item);
+      }
+
+      this.#autoScroll(event, axis.horizontal);
     };
 
-    // Sortable only reorders the DOM; the grid is then rebuilt from the color
-    // form, which is the single source of truth.
-    const broadcast = (event, colorset) =>
-      setTimeout(() => emit(event, this.#extractColors(colorset)), 0);
+    const onEnd = () => {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", onEnd);
+      document.removeEventListener("pointercancel", onEnd);
+      item.classList.remove("cg-drag-active");
 
-    Sortable.create(this.#gridContent, {
-      ...shared,
-      direction: "vertical",
-      draggable: ".cg-contrast-grid__content-row",
-      handle: ".cg-contrast-grid__key-swatch-drag-handle--row",
-      onEnd: () => broadcast(EVENTS.rowsSorted, "background"),
-    });
+      const order = this.#extractColors(axis.colorset);
+      if (order.join() !== initialOrder) {
+        emit(axis.event, order);
+      }
+    };
 
-    Sortable.create(this.#foregroundKey, {
-      ...shared,
-      direction: "horizontal",
-      draggable: ".cg-contrast-grid__foreground-key-cell",
-      handle: ".cg-contrast-grid__key-swatch-drag-handle--column",
-      onEnd: () => broadcast(EVENTS.columnsSorted, "foreground"),
-    });
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", onEnd);
+    document.addEventListener("pointercancel", onEnd);
+  }
+
+  // Scrolls the grid while the pointer is near its edge, so a color can be dragged past the visible part.
+  #autoScroll(event, horizontal) {
+    const box = this.#grid.getBoundingClientRect();
+    const [position, start, end] = horizontal
+      ? [event.clientX, box.left, box.right]
+      : [event.clientY, box.top, box.bottom];
+
+    if (position < start + AUTOSCROLL_EDGE) {
+      this.#grid.scrollBy(horizontal ? -AUTOSCROLL_STEP : 0, horizontal ? 0 : -AUTOSCROLL_STEP);
+    } else if (position > end - AUTOSCROLL_EDGE) {
+      this.#grid.scrollBy(horizontal ? AUTOSCROLL_STEP : 0, horizontal ? 0 : AUTOSCROLL_STEP);
+    }
   }
 
   // A keyboard and single-click alternative to dragging (WCAG 2.1.1, 2.5.7).

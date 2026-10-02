@@ -1,0 +1,194 @@
+@import "../components/color_form/color_form.css";
+@import "../components/contrast_grid/contrast_grid_interactions.css";
+@import "../components/contrast_grid/contrast_grid.css";
+
+/* Only the interface follows the system theme; grid tiles always show the colors as entered. */
+:root {
+    color-scheme: light dark;
+
+    --cg-font: system-ui, sans-serif;
+    --cg-font-size-xs: 12px;
+    --cg-font-size-sm: 14px;
+    --cg-font-size: 16px;
+    --cg-font-size-lg: 20px;
+    --cg-font-size-h3: 26px;
+
+    --cg-space-xs: 8px;
+    --cg-space-sm: 15px;
+    --cg-space-stack: 16px;
+    --cg-space-md: 26px;
+    --cg-space: 32px;
+
+    --cg-radius: 4px;
+
+    --cg-white: #FFFFFF;
+    --cg-black: #000000;
+    --cg-gray-30: #4D4D4D;
+    --cg-gray-50: #808080;
+    --cg-gray-95: #F2F2F2;
+
+    --cg-page: light-dark(var(--cg-white), #1E1E1E);
+    --cg-sidebar: light-dark(var(--cg-gray-95), #2A2A2A);
+    --cg-text: light-dark(var(--cg-black), #E6E6E6);
+    --cg-muted: light-dark(var(--cg-gray-30), #B0B0B0);
+    --cg-rule: light-dark(#D9D9D9, #444444);
+    --cg-border: var(--cg-gray-50);
+    /* Light: the browser default for unvisited links. Dark: the Chrome and Edge default. */
+    --cg-link: light-dark(#0000EE, #9E9EFF);
+    --cg-link-hover: light-dark(#000088, #D1D1FF);
+    --cg-toggle: light-dark(#D9D9D9, #3A3A3A);
+    --cg-toggle-checked: light-dark(var(--cg-gray-30), #D9D9D9);
+    --cg-toggle-checked-text: light-dark(var(--cg-white), #000000);
+    --cg-spacer-line: light-dark(var(--cg-gray-95), #3A3A3A);
+}
+
+html,
+body {
+    background: var(--cg-page);
+    box-sizing: border-box;
+    color: var(--cg-text);
+    font-family: var(--cg-font);
+    margin: 0;
+    min-height: 100vh;
+    padding: 0;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+a {
+    color: var(--cg-link);
+    text-decoration: none;
+
+    &:hover {
+        color: var(--cg-link-hover);
+    }
+}
+
+/* The icons inherit `fill` from the host element, so the icon classes keep working on <cg-icon>. */
+cg-icon {
+    display: inline-block;
+    line-height: 0;
+
+    svg {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+/* Viewport-high, so the sidebar and the grid scroll on their own. */
+.cg-app {
+    display: flex;
+    height: 100vh;
+}
+
+.cg-app__sidebar {
+    background: var(--cg-sidebar);
+    /* As narrow as the longest unbreakable line, whatever width the system font gives it. */
+    flex: 0 0 auto;
+    overflow-y: auto;
+    /* Keeps the content width the same whether or not the sidebar scrolls. */
+    scrollbar-gutter: stable;
+    width: min-content;
+}
+
+.cg-app__title {
+    align-items: center;
+    display: flex;
+    font-size: var(--cg-font-size-h3);
+    font-weight: normal;
+    margin: 0;
+    padding: var(--cg-space-md);
+    padding-bottom: 0;
+}
+
+.cg-app__results {
+    box-shadow: -3px 0 3px rgba(0, 0, 0, .15);
+    flex: 1;
+    /* Without this the grid's width keeps the flex item from shrinking, so the
+       panel grows past the viewport and its right edge becomes unreachable. */
+    min-width: 0;
+    overflow: hidden;
+    padding: var(--cg-space) 0 var(--cg-space) var(--cg-space);
+}
+
+/* Bounded to the viewport so the grid's own scrollbars stay on screen. */
+cg-contrast-grid {
+    display: block;
+    height: 100%;
+    /* Anchors the visually hidden status message. */
+    position: relative;
+}
+
+/* Grid legend, rendered in the sidebar rather than inside the table. */
+.cg-contrast-grid-key {
+    border-top: solid 1px var(--cg-rule);
+    margin: 0 var(--cg-space-md) var(--cg-space-md);
+    padding-top: var(--cg-space-md);
+}
+
+.cg-contrast-grid-key__label {
+    align-items: center;
+    display: flex;
+    font-size: var(--cg-font-size-sm);
+    margin-bottom: var(--cg-space-xs);
+
+    .cg-contrast-grid__accessibility-label {
+        flex-shrink: 0;
+        margin-right: var(--cg-space-xs);
+    }
+}
+
+.cg-contrast-grid-key__link {
+    display: inline-block;
+    font-size: var(--cg-font-size-sm);
+    margin-top: var(--cg-space-xs);
+}
+
+.cg-app__legal {
+    font-size: var(--cg-font-size-sm);
+    margin: 0;
+    padding: 0 var(--cg-space-md) var(--cg-space-md);
+}
+
+/* Standalone document pages such as the Impressum. */
+.cg-page {
+    line-height: 1.6;
+    margin: 0 auto;
+    max-width: 720px;
+    padding: var(--cg-space) var(--cg-space-md);
+}
+
+.cg-page__title {
+    font-size: var(--cg-font-size-h3);
+    font-weight: normal;
+    margin: 0 0 var(--cg-space);
+}
+
+.cg-page__section {
+    border-bottom: solid 1px var(--cg-rule);
+    font-size: var(--cg-font-size-lg);
+    font-weight: normal;
+    margin: var(--cg-space) 0 var(--cg-space-stack);
+    padding-bottom: var(--cg-space-xs);
+}
+
+.cg-page__heading {
+    font-size: var(--cg-font-size);
+    font-weight: bold;
+    margin: var(--cg-space-md) 0 var(--cg-space-xs);
+}
+
+.cg-page__text {
+    font-size: var(--cg-font-size);
+    margin: 0;
+}
+
+.cg-page__back {
+    border-top: solid 1px var(--cg-rule);
+    margin-top: var(--cg-space);
+    padding-top: var(--cg-space-stack);
+}

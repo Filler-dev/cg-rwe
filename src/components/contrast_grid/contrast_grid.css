@@ -1,0 +1,207 @@
+.cg-contrast-grid {
+    --swatch-size: 80px;
+    --swatch-padding: calc(var(--swatch-size) / 12);
+    --key-divider: var(--cg-gray-50);
+    --key-divider-shadow: rgba(0, 0, 0, .28);
+
+    box-sizing: border-box;
+    font-family: var(--cg-font);
+    height: 100%;
+    overflow: auto;
+    width: 100%;
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: inherit;
+    }
+}
+
+.cg-contrast-grid__table {
+    border-collapse: collapse;
+    color: var(--cg-white);
+
+    td, th {
+        border: solid 1px transparent;
+        font-size: 16px;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+/* Keeps both key axes in view while scrolling the grid. The stacking order has
+   to be explicit: without it the row keys would paint over the column keys,
+   since tbody follows thead. */
+.cg-contrast-grid__foreground-key th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+}
+
+.cg-contrast-grid__background-key-cell {
+    left: 0;
+    position: sticky;
+    z-index: 2;
+}
+
+.cg-contrast-grid__foreground-key th:first-child {
+    left: 0;
+    z-index: 4;
+}
+
+/* A cell of a border-collapse table never paints a box-shadow, so the dividers
+   go on the inner swatches. The soft edge reads as "content slides under
+   here", which keeps a half-covered tile from looking like a glitch. */
+.cg-contrast-grid__key-swatch--foreground {
+    box-shadow: 0 1px 0 var(--key-divider), 0 5px 6px -3px var(--key-divider-shadow);
+}
+
+.cg-contrast-grid__key-swatch--background {
+    box-shadow: 1px 0 0 var(--key-divider), 5px 0 6px -3px var(--key-divider-shadow);
+}
+
+.cg-contrast-grid__key-swatch-spacer {
+    box-shadow:
+        1px 0 0 var(--key-divider),
+        0 1px 0 var(--key-divider),
+        5px 0 6px -3px var(--key-divider-shadow),
+        0 5px 6px -3px var(--key-divider-shadow);
+}
+
+.cg-contrast-grid--dark-label {
+    color: black;
+}
+
+/* A swatch in the page color would blend into the page, so it gets an outline. */
+.cg-contrast-grid--white-swatch {
+    border: solid 1px light-dark(var(--cg-gray-95), transparent);
+}
+
+.cg-contrast-grid--black-swatch {
+    border: solid 1px light-dark(transparent, #444444);
+}
+
+.cg-contrast-grid__accessibility-label {
+    background: #CCCCCC;
+    border-radius: 4px;
+    display: inline-block;
+    color: var(--cg-black);
+    font-size: var(--cg-font-size-xs);
+    padding: 2px 4px;
+    text-align: center;
+    width: 36px;
+}
+
+.cg-contrast-grid__accessibility-label--fail {
+    background: #EE0000;
+    color: var(--cg-white);
+}
+
+.cg-contrast-grid__accessibility-label--large {
+    background: #CFB317;
+}
+
+.cg-contrast-grid__swatch {
+    display: flex;
+    flex-direction: column;
+    height: var(--swatch-size);
+    justify-content: space-between;
+    padding: var(--swatch-padding);
+    position: relative;
+    min-width: var(--swatch-size);
+}
+
+.cg-contrast-grid__swatch-demo-text {
+    font-size: var(--cg-font-size);
+}
+
+.cg-contrast-grid__swatch-stats {
+    align-items: center;
+    display: flex;
+    gap: 4px;
+    justify-content: space-between;
+}
+
+.cg-contrast-grid__contrast-ratio {
+    color: var(--cg-white);
+    font-size: var(--cg-font-size-sm);
+
+    .cg-contrast-grid--dark-label & {
+        color: var(--cg-black);
+    }
+}
+
+.cg-contrast-grid__swatch-spacer {
+    background-color: var(--cg-page);
+    border: solid 1px var(--cg-spacer-line);
+    height: var(--swatch-size);
+    width: 100%;
+}
+
+.cg-contrast-grid__key-swatch-spacer {
+    align-items: center;
+    background:
+         linear-gradient(to top right,
+             transparent calc(50% - 1px),
+             var(--cg-spacer-line) 50%,
+             transparent calc(50% + 1px));
+    background-color: var(--cg-page);
+    border: solid 1px var(--cg-spacer-line);
+    color: var(--cg-text);
+    display: flex;
+    height: var(--swatch-size);
+    justify-content: space-between;
+    padding: var(--swatch-padding);
+    min-width: 150px;
+}
+
+.cg-contrast-grid__key-swatch-label--background {
+    align-self: flex-end;
+}
+
+.cg-contrast-grid__key-swatch--foreground {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    font-size: var(--cg-font-size-sm);
+    /* Room for the two rows of 24px controls at small tile sizes. */
+    height: max(var(--swatch-size), 60px);
+    justify-content: center;
+    padding: var(--swatch-padding);
+    text-align: left;
+
+    .cg-contrast-grid__key-swatch-label-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 220px;
+        white-space: nowrap;
+    }
+}
+
+.cg-contrast-grid__key-swatch--background {
+    align-items: center;
+    display: flex;
+    height: var(--swatch-size);
+    padding: var(--swatch-padding);
+    text-align: left;
+    min-width: 150px;
+}
+
+.cg-contrast-grid__key-swatch-label-text {
+    font-weight: bold;
+}
+
+.cg-contrast-grid__key-swatch-label-hex {
+    font-weight: normal;
+    font-size: var(--cg-font-size-sm);
+}
+
+.cg-contrast-grid__status {
+    clip-path: inset(50%);
+    height: 1px;
+    margin: 0;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}

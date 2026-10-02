@@ -74,6 +74,14 @@ class ColorFormElement extends HTMLElement {
       }),
     );
 
+    qs(".cg-color-form__swap", this).addEventListener("click", () => {
+      [this.#foregroundInput.value, this.#backgroundInput.value] = [
+        this.#backgroundInput.value,
+        this.#foregroundInput.value,
+      ];
+      this.#broadcastValues();
+    });
+
     // Dragging fires continuously, so keep the history write off the hot path.
     const onTileSizeSettled = debounce(() => this.#updateUrl(), 300);
 

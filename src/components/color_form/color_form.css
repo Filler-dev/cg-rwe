@@ -1,0 +1,186 @@
+.cg-color-form {
+    padding: var(--cg-space-md) var(--cg-space-md) 0;
+}
+
+.cg-color-form__content {
+    margin-bottom: var(--cg-space);
+}
+
+.cg-color-form__copy {
+    font-size: var(--cg-font-size);
+    margin: 0 0 var(--cg-space-stack);
+}
+
+.cg-color-form__field-wrapper {
+    margin-bottom: var(--cg-space-md);
+}
+
+.cg-color-form__eyedropper,
+.cg-color-form__swap {
+    align-items: center;
+    background: none;
+    border: 0;
+    color: var(--cg-link);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--cg-font);
+    font-size: var(--cg-font-size-sm);
+    gap: 4px;
+    margin-bottom: var(--cg-space-xs);
+    padding: 0;
+    width: fit-content;
+
+    &:hover {
+        color: var(--cg-link-hover);
+        text-decoration: underline;
+    }
+
+    /* `display` above would otherwise defeat the hidden attribute. */
+    &[hidden] {
+        display: none;
+    }
+}
+
+.cg-color-form__eyedropper-icon,
+.cg-color-form__swap-icon {
+    fill: currentColor;
+    height: var(--cg-font-size);
+    width: var(--cg-font-size);
+}
+
+.cg-color-form__label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: var(--cg-space-sm);
+}
+
+.cg-color-form__textarea {
+    border-radius: 4px;
+    border: solid 1px var(--cg-border);
+    font-family: var(--cg-font);
+    font-size: var(--cg-font-size);
+    height: 200px;
+    padding: var(--cg-space-xs);
+    margin-bottom: var(--cg-space-sm);
+    /* Wider would push past the fixed-width sidebar. */
+    resize: vertical;
+    width: 100%;
+}
+
+.cg-color-form__field-wrapper--background-colors {
+    display: none;
+
+    .cg-color-form--show-background-colors-input & {
+        display: block;
+    }
+}
+
+.cg-color-form--show-background-colors-input .cg-color-form__show-background-colors {
+    visibility: hidden;
+}
+
+/* Both links share one cell, so the sidebar fits the longer one in either mode. */
+.cg-color-form__mode {
+    display: grid;
+    justify-items: start;
+}
+
+.cg-color-form__show-background-colors,
+.cg-color-form__hide-background-colors {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+}
+
+.cg-color-form__hide-background-colors {
+    visibility: hidden;
+
+    .cg-color-form--show-background-colors-input & {
+        visibility: visible;
+    }
+}
+
+.cg-color-form__range-group {
+    align-items: center;
+    display: flex;
+    gap: var(--cg-space-xs);
+}
+
+.cg-color-form__range {
+    accent-color: var(--cg-link);
+    flex: 1;
+    min-width: 0;
+}
+
+.cg-color-form__number {
+    border: solid 1px var(--cg-border);
+    border-radius: 4px;
+    font-family: var(--cg-font);
+    font-size: var(--cg-font-size-sm);
+    padding: 4px;
+    width: 60px;
+}
+
+.cg-color-form__unit {
+    color: var(--cg-muted);
+    font-size: var(--cg-font-size-sm);
+}
+
+.cg-color-form__radio-button-group {
+    align-items: center;
+    display: flex;
+    width: 100%;
+}
+
+.cg-color-form__checkbox-group {
+    padding-bottom: 1rem;
+}
+
+.cg-color-form__radio-button {
+    display: block;
+    font-weight: 400;
+    margin-bottom: var(--cg-space-sm);
+    /* Contains the visually hidden input, which would otherwise anchor to the
+       viewport and add scrollable page height. */
+    position: relative;
+    text-align: center;
+    width: 33.3333333%;
+}
+
+/* Hidden without `visibility`, which would drop it out of the tab order. */
+.cg-color-form__radio-button-input {
+    clip-path: inset(50%);
+    height: 1px;
+    position: absolute;
+    width: 1px;
+}
+
+.cg-color-form__radio-button-text {
+    background-color: var(--cg-toggle);
+    border-right: solid 1px var(--cg-border);
+    color: var(--cg-text);
+    cursor: pointer;
+    display: block;
+    font-size: var(--cg-font-size-xs);
+    padding: var(--cg-space-xs);
+    width: 100%;
+
+    .cg-color-form__radio-button-input:checked + & {
+        background-color: var(--cg-toggle-checked);
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, .5);
+        color: var(--cg-toggle-checked-text);
+    }
+
+    .cg-color-form__radio-button-input:focus-visible + & {
+        outline: 2px solid var(--cg-link);
+        outline-offset: -2px;
+    }
+
+    .cg-color-form__radio-button:last-child & {
+        border-radius: 0 var(--cg-radius) var(--cg-radius) 0;
+        border-right: 0;
+    }
+
+    .cg-color-form__radio-button:first-child & {
+        border-radius: var(--cg-radius) 0 0 var(--cg-radius);
+    }
+}

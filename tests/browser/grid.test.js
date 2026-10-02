@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test, vi } from "vitest";
-import "../../src/styles/project.scss";
+import "../../src/styles/project.css";
 import "../../src/components/icon/icon.js";
 import "../../src/components/contrast_grid/contrast_grid.js";
 import "../../src/components/color_form/color_form.js";
@@ -173,6 +173,46 @@ describe("move buttons", () => {
   });
 });
 
+describe("dragging", () => {
+  const handle = (colorset, hex) =>
+    qs(`.cg-contrast-grid__key-swatch--${colorset}[data-hex="${hex}"] .cg-contrast-grid__key-swatch-drag-handle`);
+  const key = (colorset, hex) => qs(`.cg-contrast-grid__key-swatch--${colorset}[data-hex="${hex}"]`);
+
+  function drag(from, to) {
+    const start = from.getBoundingClientRect();
+    from.dispatchEvent(
+      new PointerEvent("pointerdown", { bubbles: true, button: 0, clientX: start.x + 5, clientY: start.y + 5 }),
+    );
+    document.dispatchEvent(new PointerEvent("pointermove", { clientX: to.x, clientY: to.y }));
+    document.dispatchEvent(new PointerEvent("pointerup", { clientX: to.x, clientY: to.y }));
+  }
+
+  test("moves a column past the one it is dropped on", async () => {
+    enterColors("#FFFFFF; White\n#FF8000; Orange\n#000000; Black\n");
+    await expect.poll(rowHexes).toEqual(["#FFFFFF", "#FF8000", "#000000"]);
+
+    const target = key("foreground", "#000000").getBoundingClientRect();
+    drag(handle("foreground", "#FFFFFF"), { x: target.right - 2, y: target.top + 10 });
+
+    expect(textarea().value).toBe("#FF8000; Orange\n#000000; Black\n#FFFFFF; White\n");
+  });
+
+  test("moves a row", () => {
+    const target = key("background", "#FF8000").getBoundingClientRect();
+    drag(handle("background", "#FFFFFF"), { x: target.left + 10, y: target.top + 2 });
+
+    expect(rowHexes()).toEqual(["#FFFFFF", "#FF8000", "#000000"]);
+  });
+
+  test("leaves the order alone when dropped in place", () => {
+    const before = textarea().value;
+    const own = key("background", "#FFFFFF").getBoundingClientRect();
+    drag(handle("background", "#FFFFFF"), { x: own.left + 10, y: own.top + own.height / 2 });
+
+    expect(textarea().value).toBe(before);
+  });
+});
+
 describe("keyboard access", () => {
   test("reaches the hidden controls and shows them on focus", async () => {
     enterColors("#FFFFFF\n#FF8000\n");
@@ -191,5 +231,34 @@ describe("keyboard access", () => {
       const { width, height } = target.getBoundingClientRect();
       expect(Math.min(width, height)).toBeGreaterThanOrEqual(24);
     }
+  });
+});
+
+describe("swap button", () => {
+  const swap = () => qs(".cg-color-form__swap");
+  const columnHexes = () => qsa(".cg-contrast-grid__key-swatch--foreground").map((s) => s.dataset.hex);
+  const rows = () => qs("#cg-color-form__background-colors");
+
+  test("is hidden while rows and columns share one list", () => {
+    expect(swap().offsetParent).toBeNull();
+  });
+
+  test("swaps rows and columns", async () => {
+    qs(".cg-color-form__show-background-colors").click();
+    expect(swap().offsetParent).not.toBeNull();
+
+    rows().value = "#000000; Black\n";
+    enterColors("#FFFFFF; White\n#FF8000; Orange\n");
+    await expect.poll(rowHexes).toEqual(["#000000"]);
+    expect(columnHexes()).toEqual(["#FFFFFF", "#FF8000"]);
+
+    swap().click();
+
+    expect(rows().value).toBe("#FFFFFF; White\n#FF8000; Orange\n");
+    expect(textarea().value).toBe("#000000; Black\n");
+    expect(columnHexes()).toEqual(["#000000"]);
+    expect(rowHexes()).toEqual(["#FFFFFF", "#FF8000"]);
+
+    qs(".cg-color-form__hide-background-colors").click();
   });
 });

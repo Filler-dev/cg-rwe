@@ -1,1 +1,1 @@
-import "../styles/project.scss";
+import "../styles/project.css";

@@ -1,4 +1,4 @@
-import "./styles/project.scss";
+import "./styles/project.css";
 import "./components/icon/icon.js";
 // The grid must be defined before the form, so that it is already listening
 // when the form broadcasts its initial state.

@@ -1,0 +1,194 @@
+/* The dragged key moves live; the tiles of a column follow once the grid is rebuilt on release. */
+.cg-drag-active {
+    cursor: grabbing;
+
+    .cg-contrast-grid__key-swatch {
+        outline: 2px solid var(--cg-link);
+        outline-offset: -2px;
+    }
+}
+
+.cg-contrast-grid__key-swatch-drag-handle {
+    /* Lets a touch drag move the color instead of scrolling the page. */
+    touch-action: none;
+    user-select: none;
+}
+
+.cg-contrast-grid__key-swatch--foreground {
+    position: relative;
+
+    .cg-contrast-grid__key-swatch-label {
+        order: 2;
+        margin-bottom: auto;
+        margin-top: auto;
+    }
+
+    .cg-contrast-grid__key-swatch-controls {
+        align-items: center;
+        display: flex;
+        gap: 2px;
+        left: 0;
+        padding: 2px;
+        position: absolute;
+        top: 0;
+        width: 100%;
+    }
+
+    .cg-contrast-grid__key-swatch-drag-handle {
+        order: -1;
+    }
+
+    .cg-contrast-grid__key-swatch-copy {
+        margin-left: auto;
+    }
+
+    .cg-contrast-grid__key-swatch-controls--bottom {
+        bottom: 0;
+        justify-content: space-between;
+        top: auto;
+    }
+}
+
+.cg-contrast-grid__key-swatch--background {
+    position: relative;
+
+    /* Covers the whole label, as a partly hidden one would read as clipped text. */
+    .cg-contrast-grid__key-swatch-controls {
+        align-items: center;
+        background: inherit;
+        display: flex;
+        gap: 2px;
+        inset: 0;
+        justify-content: flex-end;
+        padding-right: 2px;
+        position: absolute;
+    }
+}
+
+/* Transparent rather than hidden, so keyboard users can still tab to the controls. */
+.cg-contrast-grid__key-swatch-controls {
+    opacity: 0;
+
+    .cg-contrast-grid__key-swatch:hover &,
+    .cg-contrast-grid__key-swatch:focus-within & {
+        opacity: 1;
+    }
+}
+
+.cg-contrast-grid__key-swatch-drag-handle--row {
+    cursor: ns-resize;
+}
+
+.cg-contrast-grid__key-swatch-drag-handle--column {
+    cursor: ew-resize;
+}
+
+/* 24px is the minimum target size of WCAG 2.2 (2.5.8). */
+.cg-contrast-grid__key-swatch-action,
+.cg-contrast-grid__key-swatch-drag-handle,
+.cg-contrast-grid__suggest {
+    align-items: center;
+    background: none;
+    border: 0;
+    border-radius: var(--cg-radius);
+    color: var(--cg-white);
+    display: inline-flex;
+    flex-shrink: 0;
+    height: 24px;
+    justify-content: center;
+    padding: 0;
+    width: 24px;
+
+    .cg-contrast-grid--dark-label & {
+        color: var(--cg-black);
+    }
+
+    cg-icon {
+        fill: currentColor;
+        height: var(--cg-font-size);
+        width: var(--cg-font-size);
+    }
+}
+
+.cg-contrast-grid__key-swatch-action,
+.cg-contrast-grid__suggest {
+    cursor: pointer;
+
+    &:hover {
+        background: rgba(128, 128, 128, .3);
+    }
+
+    &:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: -2px;
+    }
+}
+
+/* Still focusable at the edge, so focus survives a move to the first or last place. */
+.cg-contrast-grid__key-swatch-move[aria-disabled="true"] {
+    cursor: default;
+    opacity: .35;
+
+    &:hover {
+        background: none;
+    }
+}
+
+.cg-contrast-grid__key-swatch-remove cg-icon {
+    height: var(--cg-font-size-sm);
+    width: var(--cg-font-size-sm);
+}
+
+.cg-contrast-grid__key-swatch-drag-handle cg-icon {
+    height: var(--cg-font-size-lg);
+    width: var(--cg-font-size-lg);
+}
+
+.cg-contrast-grid__key-swatch-copied-icon {
+    display: none;
+}
+
+.cg-contrast-grid__key-swatch-copy--done {
+    .cg-contrast-grid__key-swatch-copy-icon {
+        display: none;
+    }
+
+    .cg-contrast-grid__key-swatch-copied-icon {
+        display: inline-block;
+    }
+}
+
+.cg-contrast-grid__suggest {
+    opacity: 0;
+    position: absolute;
+    right: max(0px, calc(var(--swatch-padding) - 4px));
+    top: max(0px, calc(var(--swatch-padding) - 4px));
+
+    /* `display` above would otherwise defeat the hidden attribute. */
+    &[hidden] {
+        display: none;
+    }
+
+    &[aria-disabled="true"] {
+        cursor: not-allowed;
+    }
+}
+
+.cg-contrast-grid__swatch:hover,
+.cg-contrast-grid__swatch:focus-within {
+    .cg-contrast-grid__suggest {
+        opacity: 1;
+    }
+
+    .cg-contrast-grid__suggest[aria-disabled="true"] {
+        opacity: .5;
+    }
+}
+
+.cg-contrast-grid--row-and-column-removal-disabled {
+    .cg-contrast-grid__key-swatch-remove,
+    .cg-contrast-grid__key-swatch-move,
+    .cg-contrast-grid__key-swatch-drag-handle {
+        display: none;
+    }
+}
