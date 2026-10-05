@@ -40,6 +40,7 @@
     --cg-toggle-checked: light-dark(var(--cg-gray-30), #D9D9D9);
     --cg-toggle-checked-text: light-dark(var(--cg-white), #000000);
     --cg-spacer-line: light-dark(var(--cg-gray-95), #3A3A3A);
+    --cg-error: light-dark(#B00020, #FF8A80);
 }
 
 html,

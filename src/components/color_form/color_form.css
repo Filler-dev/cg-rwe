@@ -62,9 +62,30 @@
     height: 200px;
     padding: var(--cg-space-xs);
     margin-bottom: var(--cg-space-sm);
-    /* Wider would push past the fixed-width sidebar. */
+    /* Wider would push past the sidebar. */
     resize: vertical;
     width: 100%;
+
+    &[aria-invalid="true"] {
+        border-color: var(--cg-error);
+    }
+}
+
+.cg-color-form__error {
+    color: var(--cg-error);
+    font-size: var(--cg-font-size-sm);
+    margin: calc(-1 * var(--cg-space-xs)) 0 var(--cg-space-sm);
+
+    /* Kept in the page while empty, so screen readers announce it once it fills. */
+    &:empty {
+        margin: 0;
+    }
+
+    code {
+        font-family: ui-monospace, monospace;
+        /* A long line must not widen the sidebar, which sizes to its content. */
+        overflow-wrap: anywhere;
+    }
 }
 
 .cg-color-form__field-wrapper--background-colors {

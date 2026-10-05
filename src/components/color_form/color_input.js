@@ -55,12 +55,69 @@ export function parseColorInput(value) {
   return colors;
 }
 
-export function colorsToText(colors) {
-  return colors
-    .map((color) =>
-      color.label
-        ? `${color.source}; ${color.label}\n`
-        : `${color.source}\n`,
-    )
-    .join("");
+// `fix` is set when only the separator is wrong, the likeliest mistake since labels used to follow a comma.
+export function findInvalidLines(value) {
+  return value.split("\n").flatMap((text, index) => {
+    const [source] = text.split(";").map((part) => part.trim());
+    if (!text.trim() || toHex(source)) {
+      return [];
+    }
+
+    const comma = text.lastIndexOf(",");
+    const color = text.slice(0, comma).trim();
+    const label = text.slice(comma + 1).trim();
+    const fix =
+      !text.includes(";") && comma > 0 && label && toHex(color)
+        ? `${color}; ${label}`
+        : undefined;
+
+    return [{ line: index + 1, text: text.trim(), ...(fix && { fix }) }];
+  });
+}
+
+// The edits below work on lines, so invalid ones stay where the user put them.
+function lineHex(line) {
+  const source = line.split(";")[0].trim();
+  return source ? toHex(source) : null;
+}
+
+export function removeColorLines(value, hex) {
+  return value
+    .split("\n")
+    .filter((line) => lineHex(line) !== hex)
+    .join("\n");
+}
+
+export function insertLineAfterColor(value, hex, line) {
+  const lines = value.split("\n");
+  const index = lines.findIndex((existing) => lineHex(existing) === hex);
+  lines.splice(index + 1, 0, line);
+  return lines.join("\n");
+}
+
+// Colors trade places among the lines they occupy; every other line keeps its position.
+export function reorderColorLines(value, order) {
+  const lines = value.split("\n");
+  const seen = new Set();
+  const slots = [];
+  const lineOf = new Map();
+
+  lines.forEach((line, index) => {
+    const hex = lineHex(line);
+    if (hex && !seen.has(hex)) {
+      seen.add(hex);
+      slots.push(index);
+      lineOf.set(hex, line);
+    }
+  });
+
+  const reordered = order.map((hex) => lineOf.get(hex)).filter(Boolean);
+  if (reordered.length !== slots.length) {
+    return value;
+  }
+
+  slots.forEach((slot, i) => {
+    lines[slot] = reordered[i];
+  });
+  return lines.join("\n");
 }

@@ -1,9 +1,5 @@
 import { describe, expect, test } from "vitest";
-import {
-  colorsToText,
-  parseColorInput,
-  toHex,
-} from "../../src/components/color_form/color_input.js";
+import { findInvalidLines, insertLineAfterColor, parseColorInput, removeColorLines, reorderColorLines, toHex } from "../../src/components/color_form/color_input.js";
 
 describe("toHex", () => {
   test.each([
@@ -83,9 +79,55 @@ describe("parseColorInput", () => {
   test("ignores a label separated by a comma", () => {
     expect(parseColorInput("rgb(255, 0, 0), Red")).toEqual([]);
   });
+});
 
-  test("survives a round trip through colorsToText", () => {
-    const text = "hsl(30 100% 50%); Orange\norange\nrgb(0, 0, 0); Black, deep\n";
-    expect(colorsToText(parseColorInput(text))).toBe(text);
+describe("line edits", () => {
+  const text = "#FFFFFF; White\nnope\nhsl(30 100% 50%); Orange\n\n#000000\n";
+
+  test("remove every line of a color and nothing else", () => {
+    expect(removeColorLines(text + "#FFF; again\n", "#FFFFFF")).toBe(
+      "nope\nhsl(30 100% 50%); Orange\n\n#000000\n",
+    );
+  });
+
+  test("insert right after a color", () => {
+    expect(insertLineAfterColor(text, "#FF8000", "#E97400; Orange (Large)")).toBe(
+      "#FFFFFF; White\nnope\nhsl(30 100% 50%); Orange\n#E97400; Orange (Large)\n\n#000000\n",
+    );
+  });
+
+  test("reorder colors around lines that are not colors", () => {
+    expect(reorderColorLines(text, ["#000000", "#FFFFFF", "#FF8000"])).toBe(
+      "#000000\nnope\n#FFFFFF; White\n\nhsl(30 100% 50%); Orange\n",
+    );
+  });
+
+  test("keep the text as it is when the order does not match the colors", () => {
+    expect(reorderColorLines(text, ["#000000"])).toBe(text);
+  });
+});
+
+describe("findInvalidLines", () => {
+  test("reports each line that is not a color, numbered from 1", () => {
+    expect(findInvalidLines("#FF8000; Orange\nnotacolor\n\n; Label\n")).toEqual([
+      { line: 2, text: "notacolor" },
+      { line: 4, text: "; Label" },
+    ]);
+  });
+
+  test("ignores commas that belong to the color", () => {
+    expect(findInvalidLines("rgb(255, 0, 0)\nhsl(30, 100%, 50%); Orange, warm")).toEqual([]);
+  });
+
+  test.each([
+    ["rgb(255, 0, 0), Red", "rgb(255, 0, 0); Red"],
+    ["#FF8000, Orange", "#FF8000; Orange"],
+    ["  orange ,  Warm  ", "orange; Warm"],
+  ])("suggests a semicolon for %s", (text, fix) => {
+    expect(findInvalidLines(text)[0].fix).toBe(fix);
+  });
+
+  test("suggests nothing when the part before the comma is no color either", () => {
+    expect(findInvalidLines("not, a color")[0]).not.toHaveProperty("fix");
   });
 });

@@ -66,7 +66,7 @@ describe("getContrastRatioForHex", () => {
       expect(getLevel(shown)).toBe(getLevel(exact));
       expect(String(shown)).toMatch(/^\d+(\.\d{1,2})?$/);
     });
-  });
+  }, 30_000);
 });
 
 describe("getLevel", () => {

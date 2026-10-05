@@ -8,7 +8,8 @@
         </p>
         <div class="cg-color-form__field-wrapper cg-color-form__field-wrapper--background-colors">
             <label for="cg-color-form__background-colors" class="cg-color-form__label">Rows</label>
-            <textarea id="cg-color-form__background-colors" name="background-colors" class="cg-color-form__textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="One color per line, e.g. #FF8000; Orange"></textarea>
+            <textarea id="cg-color-form__background-colors" name="background-colors" class="cg-color-form__textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="One color per line, e.g. #FF8000; Orange" aria-describedby="cg-color-form__background-colors-error"></textarea>
+            <p id="cg-color-form__background-colors-error" class="cg-color-form__error" aria-live="polite"></p>
             <button type="button" class="cg-color-form__eyedropper" data-target="cg-color-form__background-colors" hidden>
                 <cg-icon name="eyedropper" class="cg-color-form__eyedropper-icon"></cg-icon>
                 Pick color from screen
@@ -20,7 +21,7 @@
         </div>
         <div class="cg-color-form__field-wrapper">
             <label for="cg-color-form__foreground-colors" class="cg-color-form__label">Rows &amp; Columns</label>
-            <textarea id="cg-color-form__foreground-colors" name="foreground-colors" class="cg-color-form__textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="One color per line, e.g. #FF8000; Orange">
+            <textarea id="cg-color-form__foreground-colors" name="foreground-colors" class="cg-color-form__textarea" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="One color per line, e.g. #FF8000; Orange" aria-describedby="cg-color-form__foreground-colors-error">
 #FFFFFF; White
 #BFBFBF; Light Gray
 #767676; Gray
@@ -30,6 +31,7 @@
 #FF8000; Orange
 #FF4000; Red Orange
 </textarea>
+            <p id="cg-color-form__foreground-colors-error" class="cg-color-form__error" aria-live="polite"></p>
             <button type="button" class="cg-color-form__eyedropper" data-target="cg-color-form__foreground-colors" hidden>
                 <cg-icon name="eyedropper" class="cg-color-form__eyedropper-icon"></cg-icon>
                 Pick color from screen

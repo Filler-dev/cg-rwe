@@ -34,7 +34,7 @@ function tileElement(background, foreground) {
 
 beforeAll(() => {
   // The form mirrors its state into the URL, which would navigate the test frame.
-  vi.spyOn(history, "pushState").mockImplementation(() => {});
+  vi.spyOn(history, "replaceState").mockImplementation(() => {});
 
   // Mounted once: each element registers document-wide listeners on connect.
   document.body.innerHTML =
@@ -260,5 +260,72 @@ describe("swap button", () => {
     expect(rowHexes()).toEqual(["#FFFFFF", "#FF8000"]);
 
     qs(".cg-color-form__hide-background-colors").click();
+  });
+});
+
+describe("invalid lines", () => {
+  const message = () => qs("#cg-color-form__foreground-colors-error");
+
+  test("are named below the field, with a fix for a comma label", async () => {
+    enterColors("#FFFFFF; White\nrgb(255, 0, 0), Red\n");
+    await expect.poll(() => message().textContent).toBe(
+      "Line 2 is not a valid color: rgb(255, 0, 0), Red. Separate the label with a semicolon: rgb(255, 0, 0); Red.",
+    );
+    expect(textarea().getAttribute("aria-invalid")).toBe("true");
+    expect(textarea().getAttribute("aria-describedby")).toBe(message().id);
+  });
+
+  test("are summed up when there are several", async () => {
+    enterColors("nope\n#FFFFFF\nnah\nnever\n");
+    await expect.poll(() => message().textContent).toBe("Lines 1, 3 and 4 are not valid colors.");
+  });
+
+  test("render as text, never as markup", async () => {
+    enterColors('<img src=x onerror="window.__injected = true">\n');
+    await expect.poll(() => message().querySelector("code")?.textContent).toMatch(/^<img src=x/);
+    expect(message().querySelector("img")).toBeNull();
+    expect(window.__injected).toBeUndefined();
+  });
+
+  test("stay in place, with their message, when colors are removed, moved or added", async () => {
+    enterColors("#FFFFFF; White\nnope\n#FF8000; Orange\n#000000; Black\n");
+    await expect.poll(() => message().textContent).toMatch(/^Line 2 /);
+
+    qs('.cg-contrast-grid__key-swatch--background[data-hex="#000000"] .cg-contrast-grid__key-swatch-remove').click();
+    expect(textarea().value).toBe("#FFFFFF; White\nnope\n#FF8000; Orange\n");
+
+    qs('.cg-contrast-grid__key-swatch--foreground[data-hex="#FF8000"] .cg-contrast-grid__key-swatch-move[data-direction="left"]').click();
+    expect(textarea().value).toBe("#FF8000; Orange\nnope\n#FFFFFF; White\n");
+
+    qs('.cg-contrast-grid__swatch[data-background="#FFFFFF"][data-foreground="#FF8000"] .cg-contrast-grid__suggest').click();
+    expect(textarea().value).toBe("#FF8000; Orange\n#E97400; Orange (Large)\nnope\n#FFFFFF; White\n");
+    expect(message().textContent).toMatch(/^Line 3 is not a valid color/);
+  });
+
+  test("clear once every line is valid", async () => {
+    enterColors("#FFFFFF\n#000000\n");
+    await expect.poll(() => message().textContent).toBe("");
+    expect(textarea().getAttribute("aria-invalid")).toBe("false");
+  });
+});
+
+describe("address bar", () => {
+  test("is replaced, not pushed, so Back leaves the page", async () => {
+    const replace = vi.mocked(history.replaceState);
+    const push = vi.spyOn(history, "pushState");
+    enterColors("#123456\n#FFFFFF\n");
+    await expect.poll(() => replace.mock.lastCall?.[2]).toContain("123456");
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  test("gets an edit still waiting for its debounce when the page is left", () => {
+    const replace = vi.mocked(history.replaceState);
+    textarea().value = "#ABCDEF\n";
+    textarea().dispatchEvent(new Event("input"));
+    expect(replace.mock.lastCall?.[2] ?? "").not.toContain("ABCDEF");
+
+    window.dispatchEvent(new PageTransitionEvent("pagehide"));
+
+    expect(replace.mock.lastCall?.[2]).toContain("ABCDEF");
   });
 });

@@ -1,9 +1,38 @@
 import { qs, qsa, debounce } from "../../scripts/dom.js";
 import { EVENTS, emit, on } from "../../scripts/events.js";
-import { colorsToText, parseColorInput } from "./color_input.js";
+import { findInvalidLines, insertLineAfterColor, parseColorInput, removeColorLines, reorderColorLines} from "./color_input.js";
 import template from "./color_form.html?raw";
 
 const HIDE_PARAM = "hide";
+
+const MAX_QUOTED_LENGTH = 40;
+
+function quote(text) {
+  const code = document.createElement("code");
+  code.textContent =
+    text.length > MAX_QUOTED_LENGTH ? text.slice(0, MAX_QUOTED_LENGTH - 1) + "…" : text;
+  return code;
+}
+
+// Nodes rather than HTML, as the quoted lines are user input.
+function describeInvalidLines(invalid) {
+  if (invalid.length === 0) {
+    return [];
+  }
+
+  const lines = invalid.map((entry) => entry.line);
+  const parts =
+    invalid.length === 1
+      ? [`Line ${lines[0]} is not a valid color: `, quote(invalid[0].text), "."]
+      : [`Lines ${lines.slice(0, -1).join(", ")} and ${lines.at(-1)} are not valid colors.`];
+
+  const fix = invalid.find((entry) => entry.fix)?.fix;
+  if (fix) {
+    parts.push(" Separate the label with a semicolon: ", quote(fix), ".");
+  }
+
+  return parts;
+}
 
 // Stripped before a new level is appended, so labels never read "Orange (Large) (AA)".
 const LEVEL_SUFFIX = /\s*\((Large|AA|AAA)\)$/;
@@ -85,6 +114,9 @@ class ColorFormElement extends HTMLElement {
     // Dragging fires continuously, so keep the history write off the hot path.
     const onTileSizeSettled = debounce(() => this.#updateUrl(), 300);
 
+    // Reads the form directly, so an edit still waiting for its debounce is not lost.
+    window.addEventListener("pagehide", () => this.#updateUrl());
+
     this.#tileSizeInput.addEventListener("input", () => {
       this.#applyTileSize(normalizeTileSize(this.#tileSizeInput.value));
       onTileSizeSettled();
@@ -144,6 +176,8 @@ class ColorFormElement extends HTMLElement {
   #getGridData() {
     this.#foregroundColors = parseColorInput(this.#foregroundInput.value);
     this.#backgroundColors = parseColorInput(this.#backgroundInput.value);
+    this.#showInvalidLines(this.#foregroundInput);
+    this.#showInvalidLines(this.#backgroundInput);
 
     return {
       foregroundColors: this.#foregroundColors,
@@ -154,6 +188,13 @@ class ColorFormElement extends HTMLElement {
   #broadcastValues() {
     emit(EVENTS.colorFormValuesChanged, this.#getGridData());
     this.#updateUrl();
+  }
+
+  #showInvalidLines(textarea) {
+    const invalid = findInvalidLines(textarea.value);
+
+    textarea.setAttribute("aria-invalid", String(invalid.length > 0));
+    qs(`#${textarea.id}-error`, this).replaceChildren(...describeInvalidLines(invalid));
   }
 
   #applyTileSize(size, { syncNumber = true } = {}) {
@@ -181,65 +222,46 @@ class ColorFormElement extends HTMLElement {
       params.set(HIDE_PARAM, hidden.join(","));
     }
 
-    window.history.pushState(null, "", "/?" + params.toString());
+    // Replaced rather than pushed: Back leaves the page, and Forward returns to the latest state.
+    window.history.replaceState(null, "", "/?" + params.toString());
   }
 
-  #setInputText(inputName, text) {
-    qs("#cg-color-form__" + inputName + "-colors", this).value = text;
+  // In the shared-list mode rows come from the foreground field too.
+  #rowsInput() {
+    return this.#backgroundColors.length > 0
+      ? this.#backgroundInput
+      : this.#foregroundInput;
   }
 
   #removeColor(hex, colorset) {
-    if (colorset === "background" && this.#backgroundColors.length === 0) {
-      colorset = "foreground";
-    }
+    const input =
+      colorset === "background" ? this.#rowsInput() : this.#foregroundInput;
 
-    const colors =
-      colorset === "background"
-        ? this.#backgroundColors
-        : this.#foregroundColors;
-
-    this.#setInputText(
-      colorset,
-      colorsToText(colors.filter((c) => c.hex !== hex)),
-    );
+    input.value = removeColorLines(input.value, hex);
     this.#broadcastValues();
   }
 
   // Text colors are the columns, which always come from the foreground list.
   #addSuggestion(original, hex, level) {
-    const colors = [...this.#foregroundColors];
-    const index = colors.findIndex((color) => color.hex === original);
-    const name = (colors[index].label ?? colors[index].source).replace(LEVEL_SUFFIX, "");
+    const color = this.#foregroundColors.find((c) => c.hex === original);
+    const name = (color.label ?? color.source).replace(LEVEL_SUFFIX, "");
 
-    colors.splice(index + 1, 0, { hex, source: hex, label: `${name} (${level})` });
-    this.#setInputText("foreground", colorsToText(colors));
+    this.#foregroundInput.value = insertLineAfterColor(
+      this.#foregroundInput.value,
+      original,
+      `${hex}; ${name} (${level})`,
+    );
     this.#broadcastValues();
   }
 
-  #sortByHexOrder(colors, order) {
-    return order
-      .map((hex) => colors.find((c) => c.hex === hex))
-      .filter(Boolean);
-  }
-
   #sortForeground(order) {
-    this.#setInputText(
-      "foreground",
-      colorsToText(this.#sortByHexOrder(this.#foregroundColors, order)),
-    );
+    this.#foregroundInput.value = reorderColorLines(this.#foregroundInput.value, order);
     this.#broadcastValues();
   }
 
   #sortBackground(order) {
-    const usesDistinctRows = this.#backgroundColors.length > 0;
-    const source = usesDistinctRows
-      ? this.#backgroundColors
-      : this.#foregroundColors;
-
-    this.#setInputText(
-      usesDistinctRows ? "background" : "foreground",
-      colorsToText(this.#sortByHexOrder(source, order)),
-    );
+    const input = this.#rowsInput();
+    input.value = reorderColorLines(input.value, order);
     this.#broadcastValues();
   }
 
