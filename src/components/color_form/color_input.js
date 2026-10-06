@@ -75,6 +75,23 @@ export function findInvalidLines(value) {
   });
 }
 
+// The grid shows each color once, so later lines with the same color are left out.
+export function findDuplicateLines(value) {
+  const firstLine = new Map();
+
+  return value.split("\n").flatMap((text, index) => {
+    const hex = lineHex(text);
+    if (!hex) {
+      return [];
+    }
+    if (firstLine.has(hex)) {
+      return [{ line: index + 1, first: firstLine.get(hex) }];
+    }
+    firstLine.set(hex, index + 1);
+    return [];
+  });
+}
+
 // The edits below work on lines, so invalid ones stay where the user put them.
 function lineHex(line) {
   const source = line.split(";")[0].trim();

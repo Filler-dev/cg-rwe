@@ -1,5 +1,13 @@
 import { describe, expect, test } from "vitest";
-import { findInvalidLines, insertLineAfterColor, parseColorInput, removeColorLines, reorderColorLines, toHex } from "../../src/components/color_form/color_input.js";
+import {
+  findDuplicateLines,
+  findInvalidLines,
+  insertLineAfterColor,
+  parseColorInput,
+  removeColorLines,
+  reorderColorLines,
+  toHex,
+} from "../../src/components/color_form/color_input.js";
 
 describe("toHex", () => {
   test.each([
@@ -104,6 +112,20 @@ describe("line edits", () => {
 
   test("keep the text as it is when the order does not match the colors", () => {
     expect(reorderColorLines(text, ["#000000"])).toBe(text);
+  });
+});
+
+describe("findDuplicateLines", () => {
+  test("points each repeat to the line it repeats, whatever the notation", () => {
+    expect(findDuplicateLines("#FFFFFF\nwhite; W\n#F00\nnope\nred\n#fff")).toEqual([
+      { line: 2, first: 1 },
+      { line: 5, first: 3 },
+      { line: 6, first: 1 },
+    ]);
+  });
+
+  test("finds nothing in a list without repeats", () => {
+    expect(findDuplicateLines("#FFFFFF\n#000000\nnope\n")).toEqual([]);
   });
 });
 

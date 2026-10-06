@@ -1,6 +1,6 @@
 import { qs, qsa, debounce } from "../../scripts/dom.js";
 import { EVENTS, emit, on } from "../../scripts/events.js";
-import { findInvalidLines, insertLineAfterColor, parseColorInput, removeColorLines, reorderColorLines} from "./color_input.js";
+import { findDuplicateLines, findInvalidLines, insertLineAfterColor, parseColorInput, removeColorLines, reorderColorLines} from "./color_input.js";
 import template from "./color_form.html?raw";
 
 const HIDE_PARAM = "hide";
@@ -14,21 +14,28 @@ function quote(text) {
   return code;
 }
 
-// Nodes rather than HTML, as the quoted lines are user input.
-function describeInvalidLines(invalid) {
-  if (invalid.length === 0) {
-    return [];
-  }
+const listLines = (lines) => `${lines.slice(0, -1).join(", ")} and ${lines.at(-1)}`;
 
-  const lines = invalid.map((entry) => entry.line);
-  const parts =
-    invalid.length === 1
-      ? [`Line ${lines[0]} is not a valid color: `, quote(invalid[0].text), "."]
-      : [`Lines ${lines.slice(0, -1).join(", ")} and ${lines.at(-1)} are not valid colors.`];
+// Nodes rather than HTML, as the quoted lines are user input.
+function describeLineProblems(invalid, duplicates) {
+  const parts = [];
+
+  if (invalid.length === 1) {
+    parts.push(`Line ${invalid[0].line} is not a valid color: `, quote(invalid[0].text), ".");
+  } else if (invalid.length > 1) {
+    parts.push(`Lines ${listLines(invalid.map((entry) => entry.line))} are not valid colors.`);
+  }
 
   const fix = invalid.find((entry) => entry.fix)?.fix;
   if (fix) {
     parts.push(" Separate the label with a semicolon: ", quote(fix), ".");
+  }
+
+  const gap = parts.length > 0 ? " " : "";
+  if (duplicates.length === 1) {
+    parts.push(`${gap}Line ${duplicates[0].line} repeats line ${duplicates[0].first}.`);
+  } else if (duplicates.length > 1) {
+    parts.push(`${gap}Lines ${listLines(duplicates.map((entry) => entry.line))} repeat earlier colors.`);
   }
 
   return parts;
@@ -194,7 +201,9 @@ class ColorFormElement extends HTMLElement {
     const invalid = findInvalidLines(textarea.value);
 
     textarea.setAttribute("aria-invalid", String(invalid.length > 0));
-    qs(`#${textarea.id}-error`, this).replaceChildren(...describeInvalidLines(invalid));
+    qs(`#${textarea.id}-error`, this).replaceChildren(
+      ...describeLineProblems(invalid, findDuplicateLines(textarea.value)),
+    );
   }
 
   #applyTileSize(size, { syncNumber = true } = {}) {

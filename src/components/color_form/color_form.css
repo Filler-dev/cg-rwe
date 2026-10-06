@@ -146,36 +146,32 @@
     font-size: var(--cg-font-size-sm);
 }
 
-.cg-color-form__radio-button-group {
+.cg-color-form__levels {
     align-items: center;
     display: flex;
-    width: 100%;
-}
-
-.cg-color-form__checkbox-group {
     padding-bottom: 1rem;
 }
 
-.cg-color-form__radio-button {
+.cg-color-form__level {
     display: block;
+    flex: 1;
     font-weight: 400;
     margin-bottom: var(--cg-space-sm);
     /* Contains the visually hidden input, which would otherwise anchor to the
        viewport and add scrollable page height. */
     position: relative;
     text-align: center;
-    width: 33.3333333%;
 }
 
 /* Hidden without `visibility`, which would drop it out of the tab order. */
-.cg-color-form__radio-button-input {
+.cg-color-form__level-toggle {
     clip-path: inset(50%);
     height: 1px;
     position: absolute;
     width: 1px;
 }
 
-.cg-color-form__radio-button-text {
+.cg-color-form__level-text {
     background-color: var(--cg-toggle);
     border-right: solid 1px var(--cg-border);
     color: var(--cg-text);
@@ -185,23 +181,23 @@
     padding: var(--cg-space-xs);
     width: 100%;
 
-    .cg-color-form__radio-button-input:checked + & {
+    .cg-color-form__level-toggle:checked + & {
         background-color: var(--cg-toggle-checked);
         box-shadow: inset 0 0 5px rgba(0, 0, 0, .5);
         color: var(--cg-toggle-checked-text);
     }
 
-    .cg-color-form__radio-button-input:focus-visible + & {
+    .cg-color-form__level-toggle:focus-visible + & {
         outline: 2px solid var(--cg-link);
         outline-offset: -2px;
     }
 
-    .cg-color-form__radio-button:last-child & {
+    .cg-color-form__level:last-child & {
         border-radius: 0 var(--cg-radius) var(--cg-radius) 0;
         border-right: 0;
     }
 
-    .cg-color-form__radio-button:first-child & {
+    .cg-color-form__level:first-child & {
         border-radius: var(--cg-radius) 0 0 var(--cg-radius);
     }
 }

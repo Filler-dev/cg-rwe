@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
 import {
-  cssColorToHex,
   getContrastRatioForHex,
   getLevel,
 } from "../../src/components/contrast_grid/contrast.js";
@@ -81,19 +80,5 @@ describe("getLevel", () => {
     [1, "Fail"],
   ])("%s is %s", (ratio, level) => {
     expect(getLevel(ratio)).toBe(level);
-  });
-});
-
-describe("cssColorToHex", () => {
-  test("passes hex through", () => {
-    expect(cssColorToHex("#FF8000")).toBe("#FF8000");
-  });
-
-  test("converts a computed rgb() value", () => {
-    expect(cssColorToHex("rgb(255, 128, 0)")).toBe("#ff8000");
-  });
-
-  test("rejects anything else", () => {
-    expect(() => cssColorToHex("orange")).toThrow();
   });
 });

@@ -302,6 +302,19 @@ describe("invalid lines", () => {
     expect(message().textContent).toMatch(/^Line 3 is not a valid color/);
   });
 
+  test("name repeated colors without marking the field invalid", async () => {
+    enterColors("#FFFFFF\n#000000\nwhite; Again\n");
+    await expect.poll(() => message().textContent).toBe("Line 3 repeats line 1.");
+    expect(textarea().getAttribute("aria-invalid")).toBe("false");
+  });
+
+  test("combine invalid and repeated lines in one message", async () => {
+    enterColors("#FFFFFF\nnope\n#FFF\n#000\nblack\n");
+    await expect.poll(() => message().textContent).toBe(
+      "Line 2 is not a valid color: nope. Lines 3 and 5 repeat earlier colors.",
+    );
+  });
+
   test("clear once every line is valid", async () => {
     enterColors("#FFFFFF\n#000000\n");
     await expect.poll(() => message().textContent).toBe("");

@@ -104,6 +104,8 @@
 .cg-contrast-grid__swatch {
     display: flex;
     flex-direction: column;
+    /* A Windows contrast theme must not repaint the very colors being checked. */
+    forced-color-adjust: none;
     height: var(--swatch-size);
     justify-content: space-between;
     padding: var(--swatch-padding);
@@ -164,6 +166,7 @@
     display: flex;
     flex-direction: column;
     font-size: var(--cg-font-size-sm);
+    forced-color-adjust: none;
     /* Room for the two rows of 24px controls at small tile sizes. */
     height: max(var(--swatch-size), 60px);
     justify-content: center;
@@ -181,6 +184,7 @@
 .cg-contrast-grid__key-swatch--background {
     align-items: center;
     display: flex;
+    forced-color-adjust: none;
     height: var(--swatch-size);
     padding: var(--swatch-padding);
     text-align: left;

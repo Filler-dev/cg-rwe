@@ -1,25 +1,6 @@
 // Contrast math, adapted from Lea Verou's contrast-ratio and Qambar Raza's
 // color-contrast-checker. Both MIT licensed.
 
-export function cssColorToHex(color) {
-  if (/^#[0-9a-f]{6}$/i.test(color)) {
-    return color;
-  }
-
-  const channels = color.match(/\d+(\.\d+)?/g);
-  if (!channels || channels.length < 3) {
-    throw new Error(`Cannot parse color "${color}"`);
-  }
-
-  return (
-    "#" +
-    channels
-      .slice(0, 3)
-      .map((value) => Number(value).toString(16).padStart(2, "0"))
-      .join("")
-  );
-}
-
 function hexToRgb(hex) {
   return {
     r: parseInt(hex.slice(1, 3), 16),

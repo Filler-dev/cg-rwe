@@ -19,6 +19,7 @@ function redirectPage(target) {
 <head>
 <meta charset="utf-8">
 <title>Contrast Grid</title>
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <meta name="robots" content="noindex">
 <meta http-equiv="refresh" content="0; url=${attr}">
 <script>location.replace(${JSON.stringify(target)});</script>

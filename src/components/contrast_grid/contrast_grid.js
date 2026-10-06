@@ -1,7 +1,6 @@
 import { qs, qsa, delegate } from "../../scripts/dom.js";
 import { EVENTS, emit, on } from "../../scripts/events.js";
 import {
-  cssColorToHex,
   getContrastRatioForHex,
   getLevel,
 } from "./contrast.js";
@@ -58,11 +57,7 @@ class ContrastGridElement extends HTMLElement {
     const shown = this.#getVisibleLevels();
 
     qsa(".cg-contrast-grid__swatch", this).forEach((swatch) => {
-      const contrast = parseFloat(
-        qs(".cg-contrast-grid__contrast-ratio", swatch).textContent,
-      );
-
-      const level = getLevel(contrast);
+      const level = getLevel(Number(swatch.dataset.ratio));
 
       swatch.style.display = shown[level] ? "" : "none";
 
@@ -364,7 +359,7 @@ class ContrastGridElement extends HTMLElement {
   }
 
   #getVisibleLevels() {
-    const group = qs(".cg-color-form__checkbox-group");
+    const group = qs(".cg-color-form__levels");
 
     return {
       AAA: !!qs("#cg-color-form__show-contrast--aaa:checked", group),
@@ -389,15 +384,15 @@ class ContrastGridElement extends HTMLElement {
     }
   }
 
+  // From the colors as entered, not as rendered: a Windows contrast theme replaces the rendered ones.
   #addContrastToSwatches() {
     qsa(".cg-contrast-grid__swatch", this).forEach((swatch) => {
-      const styles = getComputedStyle(swatch);
-      const backgroundColor = cssColorToHex(styles.backgroundColor);
+      const { foreground, background } = swatch.dataset;
+      const ratio = getContrastRatioForHex(foreground, background);
 
-      qs(".cg-contrast-grid__contrast-ratio", swatch).textContent =
-        getContrastRatioForHex(cssColorToHex(styles.color), backgroundColor);
-
-      this.#markDarkLabel(swatch, backgroundColor);
+      swatch.dataset.ratio = ratio;
+      qs(".cg-contrast-grid__contrast-ratio", swatch).textContent = ratio;
+      this.#markDarkLabel(swatch, background);
     });
   }
 
@@ -423,10 +418,7 @@ class ContrastGridElement extends HTMLElement {
 
   #setKeySwatchLabelColors() {
     qsa(".cg-contrast-grid__key-swatch", this).forEach((swatch) =>
-      this.#markDarkLabel(
-        swatch,
-        cssColorToHex(getComputedStyle(swatch).backgroundColor),
-      ),
+      this.#markDarkLabel(swatch, swatch.dataset.hex),
     );
   }
 
